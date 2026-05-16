@@ -10,7 +10,19 @@ function e(?string $value): string
 
 function url(string $path = ''): string
 {
-    return rtrim(APP_BASE_URL, '/') . '/' . ltrim($path, '/');
+    if (APP_BASE_URL !== '') {
+        return rtrim(APP_BASE_URL, '/') . '/' . ltrim($path, '/');
+    }
+
+    $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '';
+    $projectRoot = realpath(dirname(__DIR__)) ?: '';
+    $basePath = '';
+
+    if ($documentRoot !== '' && str_starts_with($projectRoot, $documentRoot)) {
+        $basePath = str_replace('\\', '/', substr($projectRoot, strlen($documentRoot)));
+    }
+
+    return rtrim($basePath, '/') . '/' . ltrim($path, '/');
 }
 
 function redirect(string $path): never
@@ -254,11 +266,11 @@ function create_order(int $userId, array $items, string $shippingName, string $s
             'INSERT INTO order_items (order_id, product_id, quantity, unit_price)
              VALUES (?, ?, ?, ?)'
         );
-        $stockStmt = $pdo->prepare('UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE id = ?');
+        $stockStmt = $pdo->prepare('UPDATE products SET stock = CASE WHEN stock >= ? THEN stock - ? ELSE 0 END WHERE id = ?');
 
         foreach ($items as $item) {
             $itemStmt->execute([$orderId, $item['id'], $item['quantity'], $item['price']]);
-            $stockStmt->execute([$item['quantity'], $item['id']]);
+            $stockStmt->execute([$item['quantity'], $item['quantity'], $item['id']]);
         }
 
         $pdo->commit();

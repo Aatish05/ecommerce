@@ -40,8 +40,8 @@ EcoTech Electronics is a PHP + MySQL group project for an electronics e-commerce
 
 After importing the seed data:
 
-- Admin: `admin@example.com` / `password`
-- User: `user@example.com` / `password`
+- Admin: `admin@example.com` / `Admin123!`
+- User: `user@example.com` / `User123!`
 
 For final submission, create a stronger admin password from the user interface or update the database with a new `password_hash()` value.
 

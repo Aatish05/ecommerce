@@ -89,8 +89,8 @@ CREATE TABLE contact_messages (
 ) ENGINE=InnoDB;
 
 INSERT INTO users (name, username, email, password_hash, role) VALUES
-('Admin User', 'admin', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', 'admin'),
-('Demo Customer', 'customer', 'user@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', 'user');
+('Admin User', 'admin', 'admin@example.com', '$2y$10$RZkf4KU6L34vS1XqO8Xos.KzXJeiMPj2QlPL80esU/0BBvqlCNrl6', 'admin'),
+('Demo Customer', 'customer', 'user@example.com', '$2y$10$cjg8gCjuN5nc4w.F41iYFe0pPjEU3HkOtz5.BG.q8I2JAeT.UD0ay', 'user');
 
 INSERT INTO categories (name, description) VALUES
 ('Laptops', 'Energy-efficient laptops and accessories for study, work, and creative projects.'),

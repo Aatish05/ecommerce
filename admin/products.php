@@ -6,9 +6,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     if (!verify_csrf($_POST['csrf_token'] ?? null)) {
         set_flash('danger', 'Security check failed. Please try again.');
     } else {
-        $stmt = db()->prepare('DELETE FROM products WHERE id = ?');
-        $stmt->execute([(int) ($_POST['product_id'] ?? 0)]);
-        set_flash('success', 'Product deleted.');
+        $productId = (int) ($_POST['product_id'] ?? 0);
+        $stmt = db()->prepare('SELECT COUNT(*) FROM order_items WHERE product_id = ?');
+        $stmt->execute([$productId]);
+        $hasOrders = (int) $stmt->fetchColumn() > 0;
+
+        if ($hasOrders) {
+            $stmt = db()->prepare('UPDATE products SET is_active = 0 WHERE id = ?');
+            $stmt->execute([$productId]);
+            set_flash('success', 'Product is linked to orders, so it was hidden instead of permanently deleted.');
+        } else {
+            $stmt = db()->prepare('DELETE FROM products WHERE id = ?');
+            $stmt->execute([$productId]);
+            set_flash('success', 'Product deleted.');
+        }
     }
     redirect('admin/products.php');
 }
