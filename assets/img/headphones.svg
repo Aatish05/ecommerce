@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Headphones product illustration</title>
+  <desc id="desc">Noise cancelling headphones in green and charcoal.</desc>
+  <rect width="640" height="420" rx="36" fill="#f8f9fa"/>
+  <path d="M180 230v-42c0-78 62-138 140-138s140 60 140 138v42" fill="none" stroke="#10231b" stroke-width="34" stroke-linecap="round"/>
+  <rect x="126" y="212" width="96" height="126" rx="32" fill="#198754"/>
+  <rect x="418" y="212" width="96" height="126" rx="32" fill="#198754"/>
+  <path d="M222 276h196" stroke="#4b5563" stroke-width="16" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Laptop product illustration</title>
+  <desc id="desc">A green laptop with a circuit pattern on screen.</desc>
+  <rect width="640" height="420" rx="36" fill="#e9f7ef"/>
+  <rect x="120" y="80" width="400" height="240" rx="18" fill="#10231b"/>
+  <rect x="146" y="106" width="348" height="188" rx="10" fill="#2fb36d"/>
+  <path d="M92 334h456l42 42H50z" fill="#4b5563"/>
+  <path d="M255 342h130l14 14H241z" fill="#d1d5db"/>
+  <path d="M205 180h80m32 0h118M235 218h170" stroke="#e9fff2" stroke-width="14" stroke-linecap="round"/>
+</svg>
