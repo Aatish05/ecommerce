@@ -77,6 +77,7 @@ After successful login, `session_regenerate_id(true)` is called to reduce sessio
 - Product listing page with search, category filter, maximum price filter, and sorting.
 - Individual product detail pages.
 - Product reviews and rating summaries.
+- Registration requires users to choose either a customer account or a vendor account.
 - Shopping cart stored in the session.
 - Checkout for logged-in users.
 - Order history and order detail pages.
@@ -139,6 +140,7 @@ Examples:
 - Required fields are checked.
 - Email addresses use `filter_var(..., FILTER_VALIDATE_EMAIL)`.
 - Passwords require at least 8 characters with letters and numbers.
+- Account type is validated so public registration can only create customer or vendor accounts.
 - Duplicate usernames and emails are blocked.
 - Product price and stock are validated.
 - Contact messages must include a meaningful message.

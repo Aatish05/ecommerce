@@ -29,7 +29,8 @@
 2. Explain foreign key relationships.
 3. Show registration:
    - First submit invalid data to show validation.
-   - Then register a valid user.
+   - Show that users must choose Customer or Vendor.
+   - Then register a valid customer or vendor account.
 4. Log in and explain:
    - PHP sessions
    - `password_hash()`

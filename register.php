@@ -6,7 +6,7 @@ if (is_logged_in()) {
 }
 
 $errors = [];
-$values = ['name' => '', 'username' => '', 'email' => ''];
+$values = ['name' => '', 'username' => '', 'email' => '', 'role' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? null)) {
@@ -17,12 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'name' => trim($_POST['name'] ?? ''),
         'username' => trim($_POST['username'] ?? ''),
         'email' => trim($_POST['email'] ?? ''),
+        'role' => trim($_POST['role'] ?? ''),
     ];
 
     if (!$errors) {
-        [$created, $errors] = register_user($values['name'], $values['username'], $values['email'], $_POST['password'] ?? '');
+        [$created, $errors] = register_user($values['name'], $values['username'], $values['email'], $_POST['password'] ?? '', $values['role']);
         if ($created) {
-            set_flash('success', 'Registration successful. Please log in.');
+            $accountType = $values['role'] === 'vendor' ? 'vendor' : 'customer';
+            set_flash('success', 'Registration successful as a ' . $accountType . '. Please log in.');
             redirect('login.php');
         }
     }
@@ -38,7 +40,7 @@ include __DIR__ . '/includes/header.php';
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h1 class="h2">Create account</h1>
-                    <p class="text-body-secondary">Register to save orders and complete checkout.</p>
+                    <p class="text-body-secondary">Register as a customer to shop, or as a vendor to sell electronic products.</p>
                     <?php if (isset($errors['form'])): ?><div class="alert alert-danger"><?= e($errors['form']) ?></div><?php endif; ?>
                     <form class="needs-validation" method="post" novalidate>
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -57,6 +59,28 @@ include __DIR__ . '/includes/header.php';
                             <input class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" id="email" name="email" value="<?= e($values['email']) ?>" required>
                             <div class="invalid-feedback"><?= e($errors['email'] ?? 'Please enter a valid email address.') ?></div>
                         </div>
+                        <fieldset class="mb-3">
+                            <legend class="form-label form-required fs-6">Account type</legend>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <div class="form-check border rounded-3 p-3 h-100">
+                                        <input class="form-check-input <?= isset($errors['role']) ? 'is-invalid' : '' ?>" type="radio" name="role" id="role_customer" value="user" <?= $values['role'] === 'user' ? 'checked' : '' ?> required>
+                                        <label class="form-check-label fw-semibold" for="role_customer">Customer</label>
+                                        <p class="small text-body-secondary mb-0">Browse products, checkout, and write reviews.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check border rounded-3 p-3 h-100">
+                                        <input class="form-check-input <?= isset($errors['role']) ? 'is-invalid' : '' ?>" type="radio" name="role" id="role_vendor" value="vendor" <?= $values['role'] === 'vendor' ? 'checked' : '' ?> required>
+                                        <label class="form-check-label fw-semibold" for="role_vendor">Vendor</label>
+                                        <p class="small text-body-secondary mb-0">Add products and view your own sales revenue.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php if (isset($errors['role'])): ?>
+                                <div class="text-danger small mt-2"><?= e($errors['role']) ?></div>
+                            <?php endif; ?>
+                        </fieldset>
                         <div class="mb-3">
                             <label class="form-label form-required" for="password">Password</label>
                             <input class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" type="password" id="password" name="password" minlength="8" data-password-rules required>

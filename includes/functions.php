@@ -126,12 +126,13 @@ function find_user_by_username(string $username): ?array
     return $user ?: null;
 }
 
-function register_user(string $name, string $username, string $email, string $password): array
+function register_user(string $name, string $username, string $email, string $password, string $role): array
 {
     $errors = [];
     $name = trim($name);
     $username = trim($username);
     $email = strtolower(trim($email));
+    $role = trim($role);
 
     if ($name === '') {
         $errors['name'] = 'Please enter your full name.';
@@ -150,15 +151,18 @@ function register_user(string $name, string $username, string $email, string $pa
     if ($passwordMessage !== null) {
         $errors['password'] = $passwordMessage;
     }
+    if (!in_array($role, ['user', 'vendor'], true)) {
+        $errors['role'] = 'Please choose whether you are registering as a customer or vendor.';
+    }
 
     if ($errors) {
         return [false, $errors];
     }
 
     $stmt = db()->prepare(
-        'INSERT INTO users (name, username, email, password_hash, role) VALUES (?, ?, ?, ?, "user")'
+        'INSERT INTO users (name, username, email, password_hash, role) VALUES (?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT)]);
+    $stmt->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
 
     return [true, []];
 }

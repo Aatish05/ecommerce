@@ -4,7 +4,7 @@ EcoTech Electronics is a PHP + MySQL group project for an electronics e-commerce
 
 ## Main features
 
-- User registration, login, logout, session handling, and profile editing
+- User registration with required customer/vendor account selection, login, logout, session handling, and profile editing
 - Admin/user roles with protected admin routes
 - Vendor/seller role with protected product, order, and revenue dashboard
 - Product CRUD in the admin dashboard
@@ -54,7 +54,7 @@ For final submission, create a stronger admin password from the user interface o
 
 1. Show the homepage, responsive navigation, dark mode, privacy/cookie notice, and footer.
 2. Search/filter products from the database.
-3. Register a new user and show validation errors first.
+3. Register a new user and show validation errors first, including the required Customer/Vendor account type selection.
 4. Log in, add a product to cart, checkout, and view order history.
 5. Write a product review and show admin review moderation.
 6. Log out, log in as admin, and show protected dashboard access, revenue, sales graph, product details, and order history.
