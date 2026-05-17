@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1250" viewBox="0 0 1800 1250" role="img" aria-labelledby="title desc">
+  <title id="title">Low-fidelity 10 page website flow</title>
+  <desc id="desc">Simple grey wireframe flow showing ten website pages for the EcoTech Electronics e-commerce project.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#444"/>
+    </marker>
+    <style>
+      .page{fill:#fff;stroke:#222;stroke-width:3}
+      .bar{fill:#d9d9d9;stroke:#555;stroke-width:1.5}
+      .box{fill:#eeeeee;stroke:#666;stroke-width:1.5}
+      .txt{font-family:Arial,sans-serif;fill:#222}
+      .small{font-size:13px}
+      .title{font-size:18px;font-weight:700}
+      .arrow{stroke:#444;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1800" height="1250" fill="#f4f4f4"/>
+  <text x="60" y="65" class="txt" font-size="34" font-weight="700">EcoTech Electronics - Low-Fidelity 10 Page Flow</text>
+  <text x="60" y="100" class="txt" font-size="18" fill="#555">Simple academic wireframe flow: customer journey, admin management, and vendor product flow.</text>
+
+  <g id="home" transform="translate(60 150)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">1. Homepage</text>
+    <rect x="16" y="45" width="268" height="24" class="bar"/>
+    <text x="30" y="62" class="txt small">Logo | Menu | Cart</text>
+    <rect x="16" y="85" width="268" height="55" class="box"/>
+    <text x="105" y="118" class="txt small">Hero banner</text>
+    <rect x="16" y="155" width="78" height="35" class="box"/>
+    <rect x="111" y="155" width="78" height="35" class="box"/>
+    <rect x="206" y="155" width="78" height="35" class="box"/>
+  </g>
+
+  <g id="products" transform="translate(420 150)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">2. Products</text>
+    <rect x="16" y="45" width="268" height="30" class="bar"/>
+    <text x="30" y="65" class="txt small">Search | Filter | Sort</text>
+    <rect x="16" y="95" width="78" height="80" class="box"/>
+    <rect x="111" y="95" width="78" height="80" class="box"/>
+    <rect x="206" y="95" width="78" height="80" class="box"/>
+  </g>
+
+  <g id="detail" transform="translate(780 150)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">3. Product Detail</text>
+    <rect x="16" y="55" width="105" height="95" class="box"/>
+    <rect x="140" y="55" width="140" height="22" class="bar"/>
+    <rect x="140" y="90" width="105" height="22" class="bar"/>
+    <rect x="140" y="125" width="140" height="38" class="box"/>
+    <rect x="16" y="175" width="268" height="20" class="bar"/>
+    <text x="95" y="190" class="txt small">Reviews section</text>
+  </g>
+
+  <g id="cart" transform="translate(1140 150)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">4. Cart</text>
+    <rect x="16" y="50" width="268" height="30" class="bar"/>
+    <rect x="16" y="90" width="268" height="30" class="box"/>
+    <rect x="16" y="130" width="268" height="30" class="box"/>
+    <rect x="160" y="175" width="124" height="24" class="bar"/>
+    <text x="190" y="192" class="txt small">Checkout</text>
+  </g>
+
+  <g id="checkout" transform="translate(1500 150)">
+    <rect class="page" width="240" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">5. Checkout</text>
+    <rect x="16" y="55" width="130" height="24" class="bar"/>
+    <rect x="16" y="90" width="130" height="60" class="box"/>
+    <rect x="160" y="55" width="64" height="95" class="box"/>
+    <rect x="16" y="170" width="208" height="25" class="bar"/>
+  </g>
+
+  <g id="auth" transform="translate(60 460)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">6. Login / Register</text>
+    <rect x="16" y="55" width="268" height="24" class="bar"/>
+    <rect x="16" y="90" width="268" height="24" class="bar"/>
+    <rect x="16" y="125" width="268" height="24" class="bar"/>
+    <rect x="16" y="165" width="268" height="28" class="box"/>
+  </g>
+
+  <g id="orders" transform="translate(420 460)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">7. User Orders</text>
+    <rect x="16" y="55" width="268" height="28" class="bar"/>
+    <rect x="16" y="95" width="268" height="28" class="box"/>
+    <rect x="16" y="135" width="268" height="28" class="box"/>
+    <rect x="16" y="175" width="268" height="20" class="box"/>
+  </g>
+
+  <g id="admin" transform="translate(780 460)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">8. Admin Dashboard</text>
+    <rect x="16" y="50" width="65" height="145" class="box"/>
+    <rect x="95" y="50" width="185" height="30" class="bar"/>
+    <rect x="95" y="92" width="185" height="45" class="box"/>
+    <rect x="95" y="150" width="185" height="45" class="box"/>
+  </g>
+
+  <g id="adminProducts" transform="translate(1140 460)">
+    <rect class="page" width="300" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">9. Admin Products</text>
+    <rect x="16" y="55" width="268" height="25" class="bar"/>
+    <rect x="16" y="95" width="268" height="26" class="box"/>
+    <rect x="16" y="130" width="268" height="26" class="box"/>
+    <rect x="16" y="165" width="120" height="28" class="bar"/>
+  </g>
+
+  <g id="vendor" transform="translate(1500 460)">
+    <rect class="page" width="240" height="210" rx="8"/>
+    <text x="16" y="30" class="txt title">10. Vendor Panel</text>
+    <rect x="16" y="50" width="52" height="145" class="box"/>
+    <rect x="82" y="50" width="142" height="30" class="bar"/>
+    <rect x="82" y="92" width="142" height="45" class="box"/>
+    <rect x="82" y="150" width="142" height="45" class="box"/>
+  </g>
+
+  <path class="arrow" d="M360 255 H420"/>
+  <path class="arrow" d="M720 255 H780"/>
+  <path class="arrow" d="M1080 255 H1140"/>
+  <path class="arrow" d="M1440 255 H1500"/>
+  <path class="arrow" d="M210 360 V460"/>
+  <path class="arrow" d="M360 565 H420"/>
+  <path class="arrow" d="M720 565 H780"/>
+  <path class="arrow" d="M1080 565 H1140"/>
+  <path class="arrow" d="M1440 565 H1500"/>
+
+  <g transform="translate(60 780)">
+    <rect width="1680" height="300" rx="12" fill="#fff" stroke="#222" stroke-width="2"/>
+    <text x="25" y="40" class="txt title">Flow Explanation</text>
+    <text x="25" y="78" class="txt" font-size="17">Customer flow: Homepage -&gt; Products -&gt; Product Detail -&gt; Cart -&gt; Checkout -&gt; User Orders.</text>
+    <text x="25" y="118" class="txt" font-size="17">Authentication flow: Login/Register controls access to checkout, order history, admin, and vendor pages.</text>
+    <text x="25" y="158" class="txt" font-size="17">Admin flow: Admin Dashboard -&gt; Product Management -&gt; Orders, Reviews, Messages, Users, Revenue Graph.</text>
+    <text x="25" y="198" class="txt" font-size="17">Vendor flow: Vendor Panel -&gt; Add/Edit Products -&gt; View Own Orders -&gt; View Own Revenue.</text>
+    <text x="25" y="238" class="txt" font-size="17">This is low fidelity because it uses plain boxes and labels to plan layout before final styling.</text>
+  </g>
+</svg>
