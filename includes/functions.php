@@ -126,33 +126,97 @@ function find_user_by_username(string $username): ?array
     return $user ?: null;
 }
 
-function register_user(string $name, string $username, string $email, string $password, string $role): array
+function upload_image(array $file, string $folder): array
+{
+    if (empty($file['name'])) {
+        return [true, null, null];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return [false, null, 'Image upload failed. Please try again.'];
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    $maxSize = 2 * 1024 * 1024;
+
+    if ($file['size'] > $maxSize) {
+        return [false, null, 'Image must be smaller than 2MB.'];
+    }
+
+    $imageInfo = getimagesize($file['tmp_name']);
+    $mimeType = $imageInfo['mime'] ?? '';
+
+    if (!in_array($mimeType, $allowedTypes, true)) {
+        return [false, null, 'Only JPG, PNG, or WEBP images are allowed.'];
+    }
+
+    if ($mimeType === 'image/jpeg') {
+        $extension = 'jpg';
+    } elseif ($mimeType === 'image/png') {
+        $extension = 'png';
+    } elseif ($mimeType === 'image/webp') {
+        $extension = 'webp';
+    } else {
+        $extension = 'jpg';
+    }
+
+    $fileName = uniqid('img_', true) . '.' . $extension;
+    $uploadDir = __DIR__ . '/../uploads/' . $folder . '/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $targetPath = $uploadDir . $fileName;
+    $publicPath = 'uploads/' . $folder . '/' . $fileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return [false, null, 'Could not save uploaded image.'];
+    }
+
+    return [true, $publicPath, null];
+}
+
+function register_user(string $name, string $username, string $email, string $password, string $role, array $profileImage = []): array
 {
     $errors = [];
     $name = trim($name);
     $username = trim($username);
     $email = strtolower(trim($email));
     $role = trim($role);
+    $profileImagePath = null;
 
     if ($name === '') {
         $errors['name'] = 'Please enter your full name.';
     }
+
     if (!preg_match('/^[A-Za-z0-9_]{3,30}$/', $username)) {
         $errors['username'] = 'Username must be 3-30 characters and use only letters, numbers, or underscores.';
     } elseif (find_user_by_username($username)) {
         $errors['username'] = 'That username is already taken.';
     }
+
     if (!validate_email($email)) {
         $errors['email'] = 'Please enter a valid email address.';
     } elseif (find_user_by_email($email)) {
         $errors['email'] = 'An account with this email already exists.';
     }
+
     $passwordMessage = password_rules_message($password);
     if ($passwordMessage !== null) {
         $errors['password'] = $passwordMessage;
     }
+
     if (!in_array($role, ['user', 'vendor'], true)) {
         $errors['role'] = 'Please choose whether you are registering as a customer or vendor.';
+    }
+
+    if (!empty($profileImage['name'])) {
+        [$uploaded, $profileImagePath, $uploadError] = upload_image($profileImage, 'users');
+
+        if (!$uploaded) {
+            $errors['profile_image'] = $uploadError;
+        }
     }
 
     if ($errors) {
@@ -160,9 +224,18 @@ function register_user(string $name, string $username, string $email, string $pa
     }
 
     $stmt = db()->prepare(
-        'INSERT INTO users (name, username, email, password_hash, role) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO users (name, username, email, password_hash, role, profile_image)
+         VALUES (?, ?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
+
+    $stmt->execute([
+        $name,
+        $username,
+        $email,
+        password_hash($password, PASSWORD_DEFAULT),
+        $role,
+        $profileImagePath
+    ]);
 
     return [true, []];
 }
@@ -207,10 +280,12 @@ function products(array $filters = []): array
         $term = '%' . $filters['q'] . '%';
         array_push($params, $term, $term, $term);
     }
+
     if (!empty($filters['category_id'])) {
         $sql .= ' AND p.category_id = ?';
         $params[] = (int) $filters['category_id'];
     }
+
     if (!empty($filters['max_price'])) {
         $sql .= ' AND p.price <= ?';
         $params[] = (float) $filters['max_price'];
@@ -222,6 +297,7 @@ function products(array $filters = []): array
         'newest' => 'p.created_at DESC',
         'name' => 'p.name ASC',
     ];
+
     $sql .= ' ORDER BY ' . ($sorts[$filters['sort'] ?? 'newest'] ?? $sorts['newest']);
 
     $stmt = db()->prepare($sql);
@@ -236,6 +312,7 @@ function product_by_id(int $id, bool $includeInactive = false): ?array
             JOIN categories c ON c.id = p.category_id
             JOIN users u ON u.id = p.seller_id
             WHERE p.id = ?';
+
     if (!$includeInactive) {
         $sql .= ' AND p.is_active = 1';
     }
@@ -243,6 +320,7 @@ function product_by_id(int $id, bool $includeInactive = false): ?array
     $stmt = db()->prepare($sql);
     $stmt->execute([$id]);
     $product = $stmt->fetch();
+
     return $product ?: null;
 }
 
@@ -252,13 +330,16 @@ function product_reviews(int $productId, bool $approvedOnly = true): array
             FROM reviews r
             JOIN users u ON u.id = r.user_id
             WHERE r.product_id = ?';
+
     if ($approvedOnly) {
         $sql .= ' AND r.is_approved = 1';
     }
+
     $sql .= ' ORDER BY r.created_at DESC';
 
     $stmt = db()->prepare($sql);
     $stmt->execute([$productId]);
+
     return $stmt->fetchAll();
 }
 
@@ -267,6 +348,7 @@ function review_summary(int $productId): array
     $stmt = db()->prepare('SELECT COUNT(*) AS review_count, COALESCE(AVG(rating), 0) AS average_rating FROM reviews WHERE product_id = ? AND is_approved = 1');
     $stmt->execute([$productId]);
     $summary = $stmt->fetch() ?: ['review_count' => 0, 'average_rating' => 0];
+
     return [
         'review_count' => (int) $summary['review_count'],
         'average_rating' => (float) $summary['average_rating'],
@@ -276,15 +358,19 @@ function review_summary(int $productId): array
 function save_review(int $productId, int $userId, int $rating, string $title, string $body): array
 {
     $errors = [];
+
     if ($rating < 1 || $rating > 5) {
         $errors['rating'] = 'Please choose a rating from 1 to 5.';
     }
+
     if (trim($title) === '') {
         $errors['title'] = 'Please enter a short review title.';
     }
+
     if (strlen(trim($body)) < 10) {
         $errors['body'] = 'Review must be at least 10 characters.';
     }
+
     if (!product_by_id($productId)) {
         $errors['product'] = 'Product not found.';
     }
@@ -297,7 +383,9 @@ function save_review(int $productId, int $userId, int $rating, string $title, st
         'INSERT INTO reviews (product_id, user_id, rating, title, body, is_approved)
          VALUES (?, ?, ?, ?, ?, 1)'
     );
+
     $stmt->execute([$productId, $userId, $rating, trim($title), trim($body)]);
+
     return [true, []];
 }
 
@@ -314,6 +402,7 @@ function sales_chart_data(?int $sellerId = null): array
              ORDER BY sale_date ASC
              LIMIT 14'
         );
+
         $stmt->execute([$sellerId]);
     } else {
         $stmt = db()->query(
@@ -326,6 +415,7 @@ function sales_chart_data(?int $sellerId = null): array
     }
 
     $rows = $stmt->fetchAll();
+
     return [
         'labels' => array_map(function (array $row): string {
             return date('M j', strtotime($row['sale_date']));
@@ -344,7 +434,9 @@ function vendor_revenue(int $sellerId): float
          JOIN products p ON p.id = oi.product_id
          WHERE p.seller_id = ?'
     );
+
     $stmt->execute([$sellerId]);
+
     return (float) $stmt->fetchColumn();
 }
 
@@ -361,14 +453,17 @@ function cart_count(): int
 function cart_items(): array
 {
     $items = [];
+
     foreach (cart() as $productId => $quantity) {
         $product = product_by_id((int) $productId);
+
         if ($product) {
             $product['quantity'] = (int) $quantity;
             $product['line_total'] = (float) $product['price'] * (int) $quantity;
             $items[] = $product;
         }
     }
+
     return $items;
 }
 
@@ -388,21 +483,26 @@ function create_order(int $userId, array $items, string $shippingName, string $s
 {
     $pdo = db();
     $pdo->beginTransaction();
+
     try {
         $total = array_reduce($items, function (float $sum, array $item): float {
             return $sum + (float) $item['line_total'];
         }, 0.0);
+
         $stmt = $pdo->prepare(
             'INSERT INTO orders (user_id, total_amount, shipping_name, shipping_address, notes, status)
              VALUES (?, ?, ?, ?, ?, "pending")'
         );
+
         $stmt->execute([$userId, $total, $shippingName, $shippingAddress, $notes]);
+
         $orderId = (int) $pdo->lastInsertId();
 
         $itemStmt = $pdo->prepare(
             'INSERT INTO order_items (order_id, product_id, quantity, unit_price)
              VALUES (?, ?, ?, ?)'
         );
+
         $stockStmt = $pdo->prepare('UPDATE products SET stock = CASE WHEN stock >= ? THEN stock - ? ELSE 0 END WHERE id = ?');
 
         foreach ($items as $item) {
@@ -411,6 +511,7 @@ function create_order(int $userId, array $items, string $shippingName, string $s
         }
 
         $pdo->commit();
+
         return $orderId;
     } catch (Throwable $exception) {
         $pdo->rollBack();
@@ -421,15 +522,19 @@ function create_order(int $userId, array $items, string $shippingName, string $s
 function save_contact_message(string $name, string $email, string $subject, string $message): array
 {
     $errors = [];
+
     if (trim($name) === '') {
         $errors['name'] = 'Please enter your name.';
     }
+
     if (!validate_email($email)) {
         $errors['email'] = 'Please enter a valid email address.';
     }
+
     if (trim($subject) === '') {
         $errors['subject'] = 'Please enter a subject.';
     }
+
     if (strlen(trim($message)) < 10) {
         $errors['message'] = 'Message must be at least 10 characters.';
     }
@@ -439,6 +544,13 @@ function save_contact_message(string $name, string $email, string $subject, stri
     }
 
     $stmt = db()->prepare('INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)');
-    $stmt->execute([trim($name), strtolower(trim($email)), trim($subject), trim($message)]);
+
+    $stmt->execute([
+        trim($name),
+        strtolower(trim($email)),
+        trim($subject),
+        trim($message)
+    ]);
+
     return [true, []];
 }
