@@ -39,6 +39,9 @@ $active = $active ?? '';
                     <?php if (is_admin()): ?>
                         <li class="nav-item"><a class="nav-link <?= $active === 'admin' ? 'active' : '' ?>" href="<?= url('admin/dashboard.php') ?>">Admin</a></li>
                     <?php endif; ?>
+                    <?php if (is_vendor()): ?>
+                        <li class="nav-item"><a class="nav-link <?= $active === 'vendor' ? 'active' : '' ?>" href="<?= url('vendor/dashboard.php') ?>">Vendor panel</a></li>
+                    <?php endif; ?>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-outline-secondary btn-sm" id="themeToggle" type="button" aria-label="Toggle dark and light mode">
@@ -54,6 +57,12 @@ $active = $active ?? '';
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="<?= url('orders.php') ?>">My orders</a></li>
+                                <?php if (is_vendor()): ?>
+                                    <li><a class="dropdown-item" href="<?= url('vendor/dashboard.php') ?>">Vendor dashboard</a></li>
+                                <?php endif; ?>
+                                <?php if (is_admin()): ?>
+                                    <li><a class="dropdown-item" href="<?= url('admin/dashboard.php') ?>">Admin dashboard</a></li>
+                                <?php endif; ?>
                                 <li><a class="dropdown-item" href="<?= url('profile.php') ?>">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="<?= url('logout.php') ?>">Logout</a></li>

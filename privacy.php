@@ -11,7 +11,7 @@ include __DIR__ . '/includes/header.php';
             <h1>Privacy policy</h1>
             <p class="lead">This page explains how EcoTech Electronics collects, protects, and uses personal data for this educational e-commerce project.</p>
             <h2>Data we collect</h2>
-            <p>We collect account details such as name, username, email address, hashed password, order information, shipping address, cart session data, and contact form messages.</p>
+            <p>We collect account details such as name, username, email address, hashed password, order information, shipping address, cart session data, product reviews, vendor product records, and contact form messages.</p>
             <h2>GDPR and consent</h2>
             <p>The General Data Protection Regulation was approved in 2016 and has been enforced since May 25, 2018. Users should understand what data is collected and consent to essential processing needed for account login, checkout, and support.</p>
             <h2>Password and session security</h2>

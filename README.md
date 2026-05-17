@@ -6,10 +6,14 @@ EcoTech Electronics is a PHP + MySQL group project for an electronics e-commerce
 
 - User registration, login, logout, session handling, and profile editing
 - Admin/user roles with protected admin routes
+- Vendor/seller role with protected product, order, and revenue dashboard
 - Product CRUD in the admin dashboard
+- Vendor product creation and stock management
 - Dynamic product listing and product detail pages loaded from MySQL
 - Search, category, price, and sorting filters
 - Shopping cart, checkout, order history, and admin order status updates
+- Product reviews with admin moderation
+- Revenue cards, order history tables, product detail analytics, and sales graphs
 - Contact form stored in the database and admin message review
 - Prepared statements, password hashing, CSRF tokens, and server-side validation
 - Bootstrap 5 responsive layout, sticky navigation, footer, hero section, hover effects, and dark/light mode
@@ -41,6 +45,7 @@ EcoTech Electronics is a PHP + MySQL group project for an electronics e-commerce
 After importing the seed data:
 
 - Admin: `admin@example.com` / `Admin123!`
+- Vendor: `vendor@example.com` / `Vendor123!`
 - User: `user@example.com` / `User123!`
 
 For final submission, create a stronger admin password from the user interface or update the database with a new `password_hash()` value.
@@ -51,20 +56,23 @@ For final submission, create a stronger admin password from the user interface o
 2. Search/filter products from the database.
 3. Register a new user and show validation errors first.
 4. Log in, add a product to cart, checkout, and view order history.
-5. Log out, log in as admin, and show protected dashboard access.
-6. Create, edit, and delete a product in admin CRUD.
-7. Update an order status and review a contact message.
-8. Explain prepared statements, password hashing, CSRF, sessions, WCAG practices, SEO, and GDPR page.
+5. Write a product review and show admin review moderation.
+6. Log out, log in as admin, and show protected dashboard access, revenue, sales graph, product details, and order history.
+7. Create, edit, and delete a product in admin CRUD.
+8. Log in as the vendor and show vendor product upload, order history, and revenue dashboard.
+9. Update an order status and review a contact message.
+10. Explain prepared statements, password hashing, CSRF, sessions, WCAG practices, SEO, and GDPR page.
 
 ## Project structure
 
 ```text
-admin/              Protected admin dashboard, CRUD, orders, messages, users
+admin/              Protected admin dashboard, analytics, CRUD, orders, reviews, messages, users
 assets/             CSS, JavaScript, and SVG product images
 config/             Database/session configuration
 database/schema.sql MySQL schema and seed data
 docs/               Report, demo script, and contribution logs
 includes/           Shared functions, header, footer, product card
+vendor/             Protected vendor dashboard, product upload, vendor order history
 *.php               Public storefront pages
 ```
 

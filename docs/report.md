@@ -31,18 +31,23 @@ The database is defined in `database/schema.sql`.
 | `orders` | Stores checkout records linked to users. |
 | `order_items` | Stores products and quantities inside each order. |
 | `contact_messages` | Stores contact form submissions for admin review. |
+| `reviews` | Stores customer product reviews and moderation status. |
 
 ### Relationships
 
+- One vendor/seller has many products.
 - One category has many products.
 - One user has many orders.
 - One order has many order items.
 - One product can appear in many order items.
+- One product has many reviews.
 
 Text ER diagram:
 
 ```text
-users (1) ----< orders (1) ----< order_items >---- (1) products >---- (1) categories
+users/customers (1) ----< orders (1) ----< order_items >---- (1) products >---- (1) categories
+users/vendors (1) ----< products
+users/customers (1) ----< reviews >---- (1) products
 
 contact_messages is independent and managed by admins.
 ```
@@ -71,6 +76,7 @@ After successful login, `session_regenerate_id(true)` is called to reduce sessio
 - Dynamic product cards loaded from the database.
 - Product listing page with search, category filter, maximum price filter, and sorting.
 - Individual product detail pages.
+- Product reviews and rating summaries.
 - Shopping cart stored in the session.
 - Checkout for logged-in users.
 - Order history and order detail pages.
@@ -80,11 +86,22 @@ After successful login, `session_regenerate_id(true)` is called to reduce sessio
 ### Admin features
 
 - Protected admin dashboard.
+- Professional revenue dashboard with sales graph, order history, product analytics, and review summaries.
 - Product CRUD: create, read, update, and delete products.
 - Admin search for products.
+- Product details page showing stock, revenue, units sold, order history, and reviews.
 - Order status updates.
+- Review moderation.
 - Contact message review and mark-as-read action.
-- User role management.
+- User role management for admin, vendor, and customer accounts.
+
+### Vendor features
+
+- Protected vendor dashboard.
+- Vendor product upload and editing.
+- Vendor order history for products they sell.
+- Vendor revenue tracking and sales graph.
+- Vendor product performance table.
 
 ### Suggested screenshots to include before submission
 

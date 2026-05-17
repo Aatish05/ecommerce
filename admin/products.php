@@ -26,7 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
 $q = trim($_GET['q'] ?? '');
 $params = [];
-$sql = 'SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id';
+$sql = 'SELECT p.*, c.name AS category_name, u.name AS seller_name
+        FROM products p
+        JOIN categories c ON c.id = p.category_id
+        JOIN users u ON u.id = p.seller_id';
 if ($q !== '') {
     $sql .= ' WHERE p.name LIKE ? OR p.brand LIKE ?';
     $params = ['%' . $q . '%', '%' . $q . '%'];
@@ -62,11 +65,12 @@ include __DIR__ . '/../includes/header.php';
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <caption>Admin product management table</caption>
-                    <thead><tr><th scope="col">Product</th><th scope="col">Category</th><th scope="col">Price</th><th scope="col">Stock</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+                    <thead><tr><th scope="col">Product</th><th scope="col">Seller</th><th scope="col">Category</th><th scope="col">Price</th><th scope="col">Stock</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
                     <tbody>
                         <?php foreach ($products as $product): ?>
                             <tr>
                                 <th scope="row"><?= e($product['name']) ?><br><span class="small text-body-secondary"><?= e($product['brand']) ?></span></th>
+                                <td><?= e($product['seller_name']) ?></td>
                                 <td><?= e($product['category_name']) ?></td>
                                 <td><?= money((float) $product['price']) ?></td>
                                 <td><?= (int) $product['stock'] ?></td>
@@ -74,6 +78,7 @@ include __DIR__ . '/../includes/header.php';
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a class="btn btn-sm btn-outline-primary" href="<?= url('admin/product-form.php?id=' . (int) $product['id']) ?>">Edit</a>
+                                        <a class="btn btn-sm btn-outline-secondary" href="<?= url('admin/product-details.php?id=' . (int) $product['id']) ?>">Details</a>
                                         <form method="post">
                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                             <input type="hidden" name="action" value="delete">

@@ -25,6 +25,7 @@
    - `orders`
    - `order_items`
    - `contact_messages`
+   - `reviews`
 2. Explain foreign key relationships.
 3. Show registration:
    - First submit invalid data to show validation.
@@ -36,30 +37,37 @@
    - prepared statements
 5. Add a product to cart and checkout.
 6. Show the new order in phpMyAdmin or the user order page.
+7. Add a product review and explain that admins can moderate reviews.
 
 ## Person 3: Admin, SEO, accessibility, security, reflection
 
 1. Log out and log in as admin.
 2. Show that admin pages are protected from normal users.
 3. Open admin dashboard.
-4. Demonstrate CRUD:
+4. Show revenue cards, order history, product details, reviews, and the sales graph.
+5. Demonstrate CRUD:
    - Create a product
    - Edit product price/stock
    - Delete or hide a product
-5. Update an order status.
-6. Review a contact message and mark it as read.
-7. Explain SEO:
+6. Log in as the vendor account and show:
+   - Adding a vendor product
+   - Vendor product list
+   - Vendor order history
+   - Vendor revenue dashboard and sales graph
+7. Update an order status.
+8. Review a contact message and mark it as read.
+9. Explain SEO:
    - Meta descriptions
    - Meaningful titles
    - Semantic HTML
    - Fast local SVG images
-8. Explain accessibility:
+10. Explain accessibility:
    - Alt text
    - Labels
    - Heading structure
    - Keyboard navigation
    - Contrast and responsive layout
-9. Reflection:
+11. Reflection:
    - Each member briefly explains their contribution and what they learned.
 
 ## Demo checklist
@@ -69,6 +77,10 @@
 - [ ] Logout shown
 - [ ] Admin/user roles shown
 - [ ] Product CRUD shown
+- [ ] Vendor product upload shown
+- [ ] Admin revenue and sales graph shown
+- [ ] Vendor revenue and order history shown
+- [ ] Reviews shown
 - [ ] Database update shown
 - [ ] Search/filter shown
 - [ ] Validation errors shown

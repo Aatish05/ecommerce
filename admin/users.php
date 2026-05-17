@@ -7,7 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_flash('danger', 'Security check failed. Please try again.');
     } else {
         $userId = (int) ($_POST['user_id'] ?? 0);
-        $role = $_POST['role'] === 'admin' ? 'admin' : 'user';
+        $allowedRoles = ['admin', 'vendor', 'user'];
+        $role = in_array($_POST['role'] ?? '', $allowedRoles, true) ? $_POST['role'] : 'user';
         if ($userId === (int) current_user()['id'] && $role !== 'admin') {
             set_flash('warning', 'You cannot remove your own admin role.');
         } else {
@@ -20,10 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $users = db()->query(
-    'SELECT u.*, COUNT(o.id) AS order_count
+    'SELECT u.*, COALESCE(order_counts.order_count, 0) AS order_count
      FROM users u
-     LEFT JOIN orders o ON o.user_id = u.id
-     GROUP BY u.id
+     LEFT JOIN (
+        SELECT user_id, COUNT(*) AS order_count
+        FROM orders
+        GROUP BY user_id
+     ) order_counts ON order_counts.user_id = u.id
      ORDER BY u.created_at DESC'
 )->fetchAll();
 
@@ -54,6 +58,7 @@ include __DIR__ . '/../includes/header.php';
                                         <label class="visually-hidden" for="role-<?= (int) $user['id'] ?>">Role for <?= e($user['name']) ?></label>
                                         <select class="form-select form-select-sm" id="role-<?= (int) $user['id'] ?>" name="role">
                                             <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>User</option>
+                                            <option value="vendor" <?= $user['role'] === 'vendor' ? 'selected' : '' ?>>Vendor</option>
                                             <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
                                         </select>
                                         <button class="btn btn-sm btn-outline-success" type="submit">Save</button>

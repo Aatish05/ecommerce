@@ -58,6 +58,16 @@ function is_admin(): bool
     return (current_user()['role'] ?? '') === 'admin';
 }
 
+function is_vendor(): bool
+{
+    return (current_user()['role'] ?? '') === 'vendor';
+}
+
+function can_sell_products(): bool
+{
+    return is_admin() || is_vendor();
+}
+
 function require_login(): void
 {
     if (!is_logged_in()) {
@@ -71,6 +81,15 @@ function require_admin(): void
     require_login();
     if (!is_admin()) {
         set_flash('danger', 'You do not have permission to access the admin area.');
+        redirect('index.php');
+    }
+}
+
+function require_vendor(): void
+{
+    require_login();
+    if (!is_vendor()) {
+        set_flash('danger', 'You do not have permission to access the vendor area.');
         redirect('index.php');
     }
 }
@@ -149,12 +168,18 @@ function categories(): array
     return db()->query('SELECT * FROM categories ORDER BY name')->fetchAll();
 }
 
+function sellers(): array
+{
+    return db()->query('SELECT id, name, email FROM users WHERE role IN ("admin", "vendor") ORDER BY name')->fetchAll();
+}
+
 function featured_products(int $limit = 6): array
 {
     $stmt = db()->prepare(
-        'SELECT p.*, c.name AS category_name
+        'SELECT p.*, c.name AS category_name, u.name AS seller_name
          FROM products p
          JOIN categories c ON c.id = p.category_id
+         JOIN users u ON u.id = p.seller_id
          WHERE p.is_active = 1
          ORDER BY p.created_at DESC
          LIMIT ?'
@@ -166,9 +191,10 @@ function featured_products(int $limit = 6): array
 
 function products(array $filters = []): array
 {
-    $sql = 'SELECT p.*, c.name AS category_name
+    $sql = 'SELECT p.*, c.name AS category_name, u.name AS seller_name
             FROM products p
             JOIN categories c ON c.id = p.category_id
+            JOIN users u ON u.id = p.seller_id
             WHERE p.is_active = 1';
     $params = [];
 
@@ -201,9 +227,10 @@ function products(array $filters = []): array
 
 function product_by_id(int $id, bool $includeInactive = false): ?array
 {
-    $sql = 'SELECT p.*, c.name AS category_name
+    $sql = 'SELECT p.*, c.name AS category_name, u.name AS seller_name
             FROM products p
             JOIN categories c ON c.id = p.category_id
+            JOIN users u ON u.id = p.seller_id
             WHERE p.id = ?';
     if (!$includeInactive) {
         $sql .= ' AND p.is_active = 1';
@@ -213,6 +240,104 @@ function product_by_id(int $id, bool $includeInactive = false): ?array
     $stmt->execute([$id]);
     $product = $stmt->fetch();
     return $product ?: null;
+}
+
+function product_reviews(int $productId, bool $approvedOnly = true): array
+{
+    $sql = 'SELECT r.*, u.name AS reviewer_name
+            FROM reviews r
+            JOIN users u ON u.id = r.user_id
+            WHERE r.product_id = ?';
+    if ($approvedOnly) {
+        $sql .= ' AND r.is_approved = 1';
+    }
+    $sql .= ' ORDER BY r.created_at DESC';
+
+    $stmt = db()->prepare($sql);
+    $stmt->execute([$productId]);
+    return $stmt->fetchAll();
+}
+
+function review_summary(int $productId): array
+{
+    $stmt = db()->prepare('SELECT COUNT(*) AS review_count, COALESCE(AVG(rating), 0) AS average_rating FROM reviews WHERE product_id = ? AND is_approved = 1');
+    $stmt->execute([$productId]);
+    $summary = $stmt->fetch() ?: ['review_count' => 0, 'average_rating' => 0];
+    return [
+        'review_count' => (int) $summary['review_count'],
+        'average_rating' => (float) $summary['average_rating'],
+    ];
+}
+
+function save_review(int $productId, int $userId, int $rating, string $title, string $body): array
+{
+    $errors = [];
+    if ($rating < 1 || $rating > 5) {
+        $errors['rating'] = 'Please choose a rating from 1 to 5.';
+    }
+    if (trim($title) === '') {
+        $errors['title'] = 'Please enter a short review title.';
+    }
+    if (strlen(trim($body)) < 10) {
+        $errors['body'] = 'Review must be at least 10 characters.';
+    }
+    if (!product_by_id($productId)) {
+        $errors['product'] = 'Product not found.';
+    }
+
+    if ($errors) {
+        return [false, $errors];
+    }
+
+    $stmt = db()->prepare(
+        'INSERT INTO reviews (product_id, user_id, rating, title, body, is_approved)
+         VALUES (?, ?, ?, ?, ?, 1)'
+    );
+    $stmt->execute([$productId, $userId, $rating, trim($title), trim($body)]);
+    return [true, []];
+}
+
+function sales_chart_data(?int $sellerId = null): array
+{
+    if ($sellerId !== null) {
+        $stmt = db()->prepare(
+            'SELECT DATE(o.created_at) AS sale_date, COALESCE(SUM(oi.quantity * oi.unit_price), 0) AS revenue
+             FROM orders o
+             JOIN order_items oi ON oi.order_id = o.id
+             JOIN products p ON p.id = oi.product_id
+             WHERE p.seller_id = ?
+             GROUP BY DATE(o.created_at)
+             ORDER BY sale_date ASC
+             LIMIT 14'
+        );
+        $stmt->execute([$sellerId]);
+    } else {
+        $stmt = db()->query(
+            'SELECT DATE(created_at) AS sale_date, COALESCE(SUM(total_amount), 0) AS revenue
+             FROM orders
+             GROUP BY DATE(created_at)
+             ORDER BY sale_date ASC
+             LIMIT 14'
+        );
+    }
+
+    $rows = $stmt->fetchAll();
+    return [
+        'labels' => array_map(fn (array $row): string => date('M j', strtotime($row['sale_date'])), $rows),
+        'values' => array_map(fn (array $row): float => (float) $row['revenue'], $rows),
+    ];
+}
+
+function vendor_revenue(int $sellerId): float
+{
+    $stmt = db()->prepare(
+        'SELECT COALESCE(SUM(oi.quantity * oi.unit_price), 0)
+         FROM order_items oi
+         JOIN products p ON p.id = oi.product_id
+         WHERE p.seller_id = ?'
+    );
+    $stmt->execute([$sellerId]);
+    return (float) $stmt->fetchColumn();
 }
 
 function cart(): array

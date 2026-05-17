@@ -18,14 +18,14 @@ Use this file as the template for your group submission. Add names, dates, scree
 | Week 1 | Designed MySQL tables for users, categories, products, orders, order items, and contact messages. | ER diagram, schema screenshot |
 | Week 2 | Implemented PHP database connection, prepared statements, dynamic product pages, and search/filter logic. | GitHub commits |
 | Week 3 | Implemented registration, login, logout, sessions, password hashing, and role-based access control. | Demo video clip, code screenshot |
-| Week 4 | Implemented cart, checkout, order history, and admin order status updates. | phpMyAdmin screenshots |
+| Week 4 | Implemented cart, checkout, order history, reviews, vendor accounts, vendor revenue dashboard, and admin order status updates. | phpMyAdmin screenshots |
 
 ## Group member 3: Admin, security, report, and demo
 
 | Week | Contribution | Evidence to attach |
 | --- | --- | --- |
 | Week 1 | Mapped rubric requirements to project features and created documentation checklist. | Trello/Jira board screenshot |
-| Week 2 | Implemented admin dashboard, product CRUD, message review, and user role management. | GitHub commits |
+| Week 2 | Implemented admin dashboard, product CRUD, product analytics, review moderation, vendor dashboard, message review, and user role management. | GitHub commits |
 | Week 3 | Added server-side validation, CSRF protection, SEO meta tags, privacy policy, terms, and cookie notice. | Code screenshots |
 | Week 4 | Wrote report, prepared demo script, collected screenshots, and rehearsed group presentation. | Report draft, demo notes |
 

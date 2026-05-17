@@ -1,13 +1,19 @@
 <?php
 require_once __DIR__ . '/../includes/functions.php';
-require_admin();
+require_vendor();
 
+$sellerId = (int) current_user()['id'];
 $id = (int) ($_GET['id'] ?? 0);
 $editing = $id > 0;
-$product = $editing ? product_by_id($id, true) : null;
-if ($editing && !$product) {
-    set_flash('warning', 'Product not found.');
-    redirect('admin/products.php');
+$product = null;
+if ($editing) {
+    $stmt = db()->prepare('SELECT * FROM products WHERE id = ? AND seller_id = ?');
+    $stmt->execute([$id, $sellerId]);
+    $product = $stmt->fetch();
+    if (!$product) {
+        set_flash('warning', 'Product not found in your vendor account.');
+        redirect('vendor/products.php');
+    }
 }
 
 $errors = [];
@@ -16,7 +22,6 @@ $values = $product ?: [
     'brand' => '',
     'description' => '',
     'category_id' => '',
-    'seller_id' => current_user()['id'],
     'price' => '',
     'stock' => '',
     'image_url' => 'assets/img/laptop.svg',
@@ -33,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'brand' => trim($_POST['brand'] ?? ''),
         'description' => trim($_POST['description'] ?? ''),
         'category_id' => (int) ($_POST['category_id'] ?? 0),
-        'seller_id' => (int) ($_POST['seller_id'] ?? 0),
         'price' => trim($_POST['price'] ?? ''),
         'stock' => trim($_POST['stock'] ?? ''),
         'image_url' => trim($_POST['image_url'] ?? ''),
@@ -52,9 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($values['category_id'] <= 0) {
         $errors['category_id'] = 'Please choose a category.';
     }
-    if ($values['seller_id'] <= 0) {
-        $errors['seller_id'] = 'Please choose a seller.';
-    }
     if (!is_numeric($values['price']) || (float) $values['price'] <= 0) {
         $errors['price'] = 'Please enter a valid price greater than zero.';
     }
@@ -69,35 +70,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($editing) {
             $stmt = db()->prepare(
                 'UPDATE products
-                 SET category_id = ?, seller_id = ?, name = ?, brand = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?
-                 WHERE id = ?'
+                 SET category_id = ?, name = ?, brand = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?
+                 WHERE id = ? AND seller_id = ?'
             );
-            $stmt->execute([$values['category_id'], $values['seller_id'], $values['name'], $values['brand'], $values['description'], $values['price'], $values['stock'], $values['image_url'], $values['is_active'], $id]);
+            $stmt->execute([$values['category_id'], $values['name'], $values['brand'], $values['description'], $values['price'], $values['stock'], $values['image_url'], $values['is_active'], $id, $sellerId]);
             set_flash('success', 'Product updated.');
         } else {
             $stmt = db()->prepare(
                 'INSERT INTO products (category_id, seller_id, name, brand, description, price, stock, image_url, is_active)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$values['category_id'], $values['seller_id'], $values['name'], $values['brand'], $values['description'], $values['price'], $values['stock'], $values['image_url'], $values['is_active']]);
+            $stmt->execute([$values['category_id'], $sellerId, $values['name'], $values['brand'], $values['description'], $values['price'], $values['stock'], $values['image_url'], $values['is_active']]);
             set_flash('success', 'Product created.');
         }
-        redirect('admin/products.php');
+        redirect('vendor/products.php');
     }
 }
 
-$pageTitle = $editing ? 'Edit Product' : 'Add Product';
-$active = 'admin';
-$adminActive = 'products';
+$pageTitle = $editing ? 'Edit Vendor Product' : 'Add Vendor Product';
+$active = 'vendor';
+$vendorActive = 'products';
 $categories = categories();
-$sellers = sellers();
 include __DIR__ . '/../includes/header.php';
 ?>
 <section class="container">
     <div class="row g-4">
         <div class="col-lg-3"><?php include __DIR__ . '/_sidebar.php'; ?></div>
         <div class="col-lg-9">
-            <h1><?= $editing ? 'Edit product' : 'Add product' ?></h1>
+            <h1><?= $editing ? 'Edit my product' : 'Add product' ?></h1>
             <?php if (isset($errors['form'])): ?><div class="alert alert-danger"><?= e($errors['form']) ?></div><?php endif; ?>
             <form class="card card-body shadow-sm needs-validation" method="post" novalidate>
                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -121,16 +121,6 @@ include __DIR__ . '/../includes/header.php';
                             <?php endforeach; ?>
                         </select>
                         <div class="invalid-feedback"><?= e($errors['category_id'] ?? 'Please choose a category.') ?></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label form-required" for="seller_id">Seller</label>
-                        <select class="form-select <?= isset($errors['seller_id']) ? 'is-invalid' : '' ?>" id="seller_id" name="seller_id" required>
-                            <option value="">Choose seller</option>
-                            <?php foreach ($sellers as $seller): ?>
-                                <option value="<?= (int) $seller['id'] ?>" <?= (string) $values['seller_id'] === (string) $seller['id'] ? 'selected' : '' ?>><?= e($seller['name']) ?> (<?= e($seller['email']) ?>)</option>
-                            <?php endforeach; ?>
-                        </select>
-                        <div class="invalid-feedback"><?= e($errors['seller_id'] ?? 'Please choose a seller.') ?></div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label form-required" for="price">Price</label>
@@ -161,7 +151,7 @@ include __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="d-flex gap-2 mt-4">
                     <button class="btn btn-success" type="submit">Save product</button>
-                    <a class="btn btn-outline-secondary" href="<?= url('admin/products.php') ?>">Cancel</a>
+                    <a class="btn btn-outline-secondary" href="<?= url('vendor/products.php') ?>">Cancel</a>
                 </div>
             </form>
         </div>

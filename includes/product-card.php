@@ -3,6 +3,7 @@
     <div class="card-body d-flex flex-column">
         <span class="badge text-bg-light align-self-start mb-2"><?= e($product['category_name']) ?></span>
         <h3 class="h5 card-title"><?= e($product['name']) ?></h3>
+        <p class="small text-body-secondary mb-2">Sold by <?= e($product['seller_name'] ?? 'EcoTech') ?></p>
         <?php $summary = strlen($product['description']) > 110 ? substr($product['description'], 0, 107) . '...' : $product['description']; ?>
         <p class="card-text text-body-secondary small flex-grow-1"><?= e($summary) ?></p>
         <div class="d-flex justify-content-between align-items-center">

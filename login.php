@@ -27,7 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'role' => $user['role'],
             ];
             set_flash('success', 'Welcome back, ' . $user['name'] . '!');
-            redirect($user['role'] === 'admin' ? 'admin/dashboard.php' : 'index.php');
+            $destination = match ($user['role']) {
+                'admin' => 'admin/dashboard.php',
+                'vendor' => 'vendor/dashboard.php',
+                default => 'index.php',
+            };
+            redirect($destination);
         }
     }
 }
@@ -60,7 +65,7 @@ include __DIR__ . '/includes/header.php';
                     </form>
                     <p class="mt-3 mb-0">Need an account? <a href="<?= url('register.php') ?>">Register now</a>.</p>
                     <div class="alert alert-light border mt-3 small">
-                        Demo accounts after importing the seed data: admin@example.com / Admin123!, user@example.com / User123!.
+                        Demo accounts after importing the seed data: admin@example.com / Admin123!, vendor@example.com / Vendor123!, user@example.com / User123!.
                     </div>
                 </div>
             </div>
