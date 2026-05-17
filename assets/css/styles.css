@@ -55,11 +55,12 @@ body {
 }
 
 .product-image {
-    height: 210px;
-    object-fit: contain;
+    height: 260px;
+    object-fit: cover;
     padding: 1.5rem;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
 }
+
 
 [data-bs-theme="dark"] .product-image {
     background: linear-gradient(135deg, #23272b, #16191d);
@@ -126,5 +127,22 @@ body {
         left: 1rem;
         flex-direction: column;
         align-items: stretch;
+    }
+}
+.product-detail-image {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 0;
+}
+
+[data-bs-theme="dark"] .product-detail-image {
+    background: linear-gradient(135deg, #23272b, #16191d);
+}
+
+@media (max-width: 768px) {
+    .product-detail-image {
+        height: 340px;
     }
 }

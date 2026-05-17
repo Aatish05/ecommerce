@@ -47,7 +47,11 @@ include __DIR__ . '/includes/header.php';
     </nav>
     <div class="row g-5">
         <div class="col-lg-6">
-            <img class="img-fluid product-image rounded-4 w-100" src="<?= e($product['image_url']) ?>" alt="<?= e($product['name']) ?> product image">
+            <img
+            class="img-fluid product-detail-image rounded-4 w-100"
+            src="<?= e($product['image_url']) ?>"
+            alt="<?= e($product['name']) ?> product image"
+        >
         </div>
         <div class="col-lg-6">
             <span class="badge text-bg-success"><?= e($product['category_name']) ?></span>

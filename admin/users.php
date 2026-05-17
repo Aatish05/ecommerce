@@ -5,18 +5,33 @@ require_admin();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? null)) {
         set_flash('danger', 'Security check failed. Please try again.');
-    } else {
-        $userId = (int) ($_POST['user_id'] ?? 0);
-        $allowedRoles = ['admin', 'vendor', 'user'];
-        $role = in_array($_POST['role'] ?? '', $allowedRoles, true) ? $_POST['role'] : 'user';
-        if ($userId === (int) current_user()['id'] && $role !== 'admin') {
-            set_flash('warning', 'You cannot remove your own admin role.');
-        } else {
-            $stmt = db()->prepare('UPDATE users SET role = ? WHERE id = ?');
-            $stmt->execute([$role, $userId]);
-            set_flash('success', 'User role updated.');
-        }
+        redirect('admin/users.php');
     }
+
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $allowedRoles = ['admin', 'vendor', 'user'];
+    $role = in_array($_POST['role'] ?? '', $allowedRoles, true) ? $_POST['role'] : 'user';
+    $isBanned = isset($_POST['is_banned']) ? 1 : 0;
+
+    if ($userId === (int) current_user()['id'] && $role !== 'admin') {
+        set_flash('warning', 'You cannot remove your own admin role.');
+        redirect('admin/users.php');
+    }
+
+    if ($userId === (int) current_user()['id'] && $isBanned === 1) {
+        set_flash('warning', 'You cannot ban your own account.');
+        redirect('admin/users.php');
+    }
+
+    $stmt = db()->prepare(
+        'UPDATE users
+         SET role = ?, is_banned = ?
+         WHERE id = ?'
+    );
+
+    $stmt->execute([$role, $isBanned, $userId]);
+
+    set_flash('success', 'User role and ban status updated.');
     redirect('admin/users.php');
 }
 
@@ -39,33 +54,122 @@ include __DIR__ . '/../includes/header.php';
 <section class="container">
     <div class="row g-4">
         <div class="col-lg-3"><?php include __DIR__ . '/_sidebar.php'; ?></div>
+
         <div class="col-lg-9">
             <h1>Manage users</h1>
+            <p class="text-body-secondary">
+                Admins can update user roles and ban fake or suspicious customer/vendor accounts.
+            </p>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                    <caption>User accounts and roles</caption>
-                    <thead><tr><th scope="col">User</th><th scope="col">Email</th><th scope="col">Orders</th><th scope="col">Role</th></tr></thead>
+                    <caption>User accounts, roles, and ban status</caption>
+
+                    <thead>
+                        <tr>
+                            <th scope="col">User</th>
+                            <th scope="col">Profile</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Orders</th>
+                            <th scope="col">Role / Ban</th>
+                        </tr>
+                    </thead>
+
                     <tbody>
                         <?php foreach ($users as $user): ?>
                             <tr>
-                                <th scope="row"><?= e($user['name']) ?><br><span class="small text-body-secondary">@<?= e($user['username']) ?></span></th>
-                                <td><?= e($user['email']) ?></td>
-                                <td><?= (int) $user['order_count'] ?></td>
+                                <th scope="row">
+                                    <?= e($user['name']) ?><br>
+                                    <span class="small text-body-secondary">
+                                        @<?= e($user['username']) ?>
+                                    </span>
+
+                                    <?php if ((int) ($user['is_banned'] ?? 0) === 1): ?>
+                                        <br>
+                                        <span class="badge text-bg-danger mt-1">Banned</span>
+                                    <?php endif; ?>
+                                </th>
+
                                 <td>
-                                    <form class="d-flex gap-2" method="post">
+                                    <?php if (!empty($user['profile_image'])): ?>
+                                        <img
+                                            src="<?= e(url($user['profile_image'])) ?>"
+                                            alt="<?= e($user['name']) ?> profile image"
+                                            width="56"
+                                            height="56"
+                                            class="rounded-circle border"
+                                            style="object-fit: cover;"
+                                        >
+                                    <?php else: ?>
+                                        <div
+                                            class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                            style="width:56px;height:56px;"
+                                        >
+                                            N/A
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+
+                                <td><?= e($user['email']) ?></td>
+
+                                <td><?= (int) $user['order_count'] ?></td>
+
+                                <td>
+                                    <form class="row g-2 align-items-center" method="post">
                                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                         <input type="hidden" name="user_id" value="<?= (int) $user['id'] ?>">
-                                        <label class="visually-hidden" for="role-<?= (int) $user['id'] ?>">Role for <?= e($user['name']) ?></label>
-                                        <select class="form-select form-select-sm" id="role-<?= (int) $user['id'] ?>" name="role">
-                                            <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>User</option>
-                                            <option value="vendor" <?= $user['role'] === 'vendor' ? 'selected' : '' ?>>Vendor</option>
-                                            <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-success" type="submit">Save</button>
+
+                                        <div class="col-md-6">
+                                            <label class="visually-hidden" for="role-<?= (int) $user['id'] ?>">
+                                                Role for <?= e($user['name']) ?>
+                                            </label>
+
+                                            <select class="form-select form-select-sm" id="role-<?= (int) $user['id'] ?>" name="role">
+                                                <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>
+                                                    User
+                                                </option>
+                                                <option value="vendor" <?= $user['role'] === 'vendor' ? 'selected' : '' ?>>
+                                                    Vendor
+                                                </option>
+                                                <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>
+                                                    Admin
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    id="ban-<?= (int) $user['id'] ?>"
+                                                    name="is_banned"
+                                                    <?= (int) ($user['is_banned'] ?? 0) === 1 ? 'checked' : '' ?>
+                                                    <?= (int) $user['id'] === (int) current_user()['id'] ? 'disabled' : '' ?>
+                                                >
+                                                <label class="form-check-label small" for="ban-<?= (int) $user['id'] ?>">
+                                                    Ban
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <button class="btn btn-sm btn-outline-success" type="submit">
+                                                Save
+                                            </button>
+                                        </div>
                                     </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+
+                        <?php if (!$users): ?>
+                            <tr>
+                                <td colspan="5" class="text-center text-body-secondary">
+                                    No users found.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

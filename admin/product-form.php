@@ -1,21 +1,14 @@
 <?php
 require_once __DIR__ . '/../includes/functions.php';
-require_vendor();
+require_admin();
 
-$sellerId = (int) current_user()['id'];
 $id = (int) ($_GET['id'] ?? 0);
 $editing = $id > 0;
-$product = null;
+$product = $editing ? product_by_id($id, true) : null;
 
-if ($editing) {
-    $stmt = db()->prepare('SELECT * FROM products WHERE id = ? AND seller_id = ?');
-    $stmt->execute([$id, $sellerId]);
-    $product = $stmt->fetch();
-
-    if (!$product) {
-        set_flash('warning', 'Product not found in your vendor account.');
-        redirect('vendor/products.php');
-    }
+if ($editing && !$product) {
+    set_flash('warning', 'Product not found.');
+    redirect('admin/products.php');
 }
 
 $errors = [];
@@ -24,9 +17,10 @@ $values = $product ?: [
     'brand' => '',
     'description' => '',
     'category_id' => '',
+    'seller_id' => '',
     'price' => '',
     'stock' => '',
-    'image_url' => 'assets/img/laptop.svg',
+    'image_url' => '',
     'is_active' => 1,
 ];
 
@@ -40,9 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'brand' => trim($_POST['brand'] ?? ''),
         'description' => trim($_POST['description'] ?? ''),
         'category_id' => (int) ($_POST['category_id'] ?? 0),
+        'seller_id' => (int) ($_POST['seller_id'] ?? 0),
         'price' => trim($_POST['price'] ?? ''),
         'stock' => trim($_POST['stock'] ?? ''),
-        'image_url' => trim($_POST['image_url'] ?? ($product['image_url'] ?? 'assets/img/laptop.svg')),
+        'image_url' => trim($_POST['existing_image_url'] ?? ''),
         'is_active' => isset($_POST['is_active']) ? 1 : 0,
     ];
 
@@ -52,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($uploaded) {
             $values['image_url'] = $uploadedPath;
         } else {
-            $errors['image_url'] = $uploadError;
+            $errors['product_image'] = $uploadError;
         }
     }
 
@@ -72,6 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['category_id'] = 'Please choose a category.';
     }
 
+    if ($values['seller_id'] <= 0) {
+        $errors['seller_id'] = 'Please choose a seller.';
+    }
+
     if (!is_numeric($values['price']) || (float) $values['price'] <= 0) {
         $errors['price'] = 'Please enter a valid price greater than zero.';
     }
@@ -81,19 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($values['image_url'] === '') {
-        $errors['image_url'] = 'Please upload a product image.';
+        $errors['product_image'] = 'Please upload a product image.';
     }
 
     if (!$errors) {
         if ($editing) {
             $stmt = db()->prepare(
                 'UPDATE products
-                 SET category_id = ?, name = ?, brand = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?
-                 WHERE id = ? AND seller_id = ?'
+                 SET category_id = ?, seller_id = ?, name = ?, brand = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?
+                 WHERE id = ?'
             );
 
             $stmt->execute([
                 $values['category_id'],
+                $values['seller_id'],
                 $values['name'],
                 $values['brand'],
                 $values['description'],
@@ -101,8 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $values['stock'],
                 $values['image_url'],
                 $values['is_active'],
-                $id,
-                $sellerId
+                $id
             ]);
 
             set_flash('success', 'Product updated.');
@@ -114,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute([
                 $values['category_id'],
-                $sellerId,
+                $values['seller_id'],
                 $values['name'],
                 $values['brand'],
                 $values['description'],
@@ -127,14 +126,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             set_flash('success', 'Product created.');
         }
 
-        redirect('vendor/products.php');
+        redirect('admin/products.php');
     }
 }
 
-$pageTitle = $editing ? 'Edit Vendor Product' : 'Add Vendor Product';
-$active = 'vendor';
-$vendorActive = 'products';
+$pageTitle = $editing ? 'Edit Product' : 'Add Product';
+$active = 'admin';
+$adminActive = 'products';
 $categories = categories();
+$sellers = sellers();
+
 include __DIR__ . '/../includes/header.php';
 ?>
 <section class="container">
@@ -142,7 +143,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="col-lg-3"><?php include __DIR__ . '/_sidebar.php'; ?></div>
 
         <div class="col-lg-9">
-            <h1><?= $editing ? 'Edit my product' : 'Add product' ?></h1>
+            <h1><?= $editing ? 'Edit product' : 'Add product' ?></h1>
 
             <?php if (isset($errors['form'])): ?>
                 <div class="alert alert-danger"><?= e($errors['form']) ?></div>
@@ -150,6 +151,7 @@ include __DIR__ . '/../includes/header.php';
 
             <form class="card card-body shadow-sm needs-validation" method="post" enctype="multipart/form-data" novalidate>
                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                <input type="hidden" name="existing_image_url" value="<?= e((string) $values['image_url']) ?>">
 
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -177,40 +179,59 @@ include __DIR__ . '/../includes/header.php';
                         <div class="invalid-feedback"><?= e($errors['category_id'] ?? 'Please choose a category.') ?></div>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
+                        <label class="form-label form-required" for="seller_id">Seller</label>
+                        <select class="form-select <?= isset($errors['seller_id']) ? 'is-invalid' : '' ?>" id="seller_id" name="seller_id" required>
+                            <option value="">Choose seller</option>
+                            <?php foreach ($sellers as $seller): ?>
+                                <option value="<?= (int) $seller['id'] ?>" <?= (string) $values['seller_id'] === (string) $seller['id'] ? 'selected' : '' ?>>
+                                    <?= e($seller['name']) ?> (<?= e($seller['email']) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="invalid-feedback"><?= e($errors['seller_id'] ?? 'Please choose a seller.') ?></div>
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label form-required" for="price">Price</label>
                         <input class="form-control <?= isset($errors['price']) ? 'is-invalid' : '' ?>" type="number" step="0.01" min="0.01" id="price" name="price" value="<?= e((string) $values['price']) ?>" required>
                         <div class="invalid-feedback"><?= e($errors['price'] ?? 'Please enter a valid price.') ?></div>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label class="form-label form-required" for="stock">Stock</label>
                         <input class="form-control <?= isset($errors['stock']) ? 'is-invalid' : '' ?>" type="number" min="0" id="stock" name="stock" value="<?= e((string) $values['stock']) ?>" required>
                         <div class="invalid-feedback"><?= e($errors['stock'] ?? 'Please enter a whole number.') ?></div>
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label" for="product_image">Product image upload</label>
-                        <input class="form-control <?= isset($errors['image_url']) ? 'is-invalid' : '' ?>" type="file" id="product_image" name="product_image" accept="image/jpeg,image/png,image/webp">
+                        <label class="form-label form-required" for="product_image">Product image</label>
+                        <input
+                            class="form-control <?= isset($errors['product_image']) ? 'is-invalid' : '' ?>"
+                            type="file"
+                            id="product_image"
+                            name="product_image"
+                            accept="image/jpeg,image/png,image/webp"
+                            <?= $editing ? '' : 'required' ?>
+                        >
                         <div class="form-text">Upload JPG, PNG, or WEBP. Maximum size 2MB.</div>
 
                         <?php if (!empty($values['image_url'])): ?>
-                            <div class="mt-2">
+                            <div class="mt-3">
+                                <p class="small text-body-secondary mb-1">Current image:</p>
                                 <img
                                     src="<?= e(url($values['image_url'])) ?>"
                                     alt="Current product image"
-                                    width="120"
-                                    height="120"
+                                    width="130"
+                                    height="130"
                                     class="rounded border"
                                     style="object-fit: cover;"
                                 >
                             </div>
                         <?php endif; ?>
 
-                        <input type="hidden" name="image_url" value="<?= e((string) $values['image_url']) ?>">
-
-                        <?php if (isset($errors['image_url'])): ?>
-                            <div class="text-danger small mt-2"><?= e($errors['image_url']) ?></div>
+                        <?php if (isset($errors['product_image'])): ?>
+                            <div class="text-danger small mt-2"><?= e($errors['product_image']) ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -230,7 +251,7 @@ include __DIR__ . '/../includes/header.php';
 
                 <div class="d-flex gap-2 mt-4">
                     <button class="btn btn-success" type="submit">Save product</button>
-                    <a class="btn btn-outline-secondary" href="<?= url('vendor/products.php') ?>">Cancel</a>
+                    <a class="btn btn-outline-secondary" href="<?= url('admin/products.php') ?>">Cancel</a>
                 </div>
             </form>
         </div>
