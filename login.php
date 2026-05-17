@@ -27,11 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'role' => $user['role'],
             ];
             set_flash('success', 'Welcome back, ' . $user['name'] . '!');
-            $destination = match ($user['role']) {
-                'admin' => 'admin/dashboard.php',
-                'vendor' => 'vendor/dashboard.php',
-                default => 'index.php',
-            };
+            if ($user['role'] === 'admin') {
+                $destination = 'admin/dashboard.php';
+            } elseif ($user['role'] === 'vendor') {
+                $destination = 'vendor/dashboard.php';
+            } else {
+                $destination = 'index.php';
+            }
             redirect($destination);
         }
     }

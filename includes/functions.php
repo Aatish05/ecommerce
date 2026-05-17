@@ -18,14 +18,14 @@ function url(string $path = ''): string
     $projectRoot = realpath(dirname(__DIR__)) ?: '';
     $basePath = '';
 
-    if ($documentRoot !== '' && str_starts_with($projectRoot, $documentRoot)) {
+    if ($documentRoot !== '' && substr($projectRoot, 0, strlen($documentRoot)) === $documentRoot) {
         $basePath = str_replace('\\', '/', substr($projectRoot, strlen($documentRoot)));
     }
 
     return rtrim($basePath, '/') . '/' . ltrim($path, '/');
 }
 
-function redirect(string $path): never
+function redirect(string $path): void
 {
     header('Location: ' . url($path));
     exit;
@@ -323,8 +323,12 @@ function sales_chart_data(?int $sellerId = null): array
 
     $rows = $stmt->fetchAll();
     return [
-        'labels' => array_map(fn (array $row): string => date('M j', strtotime($row['sale_date'])), $rows),
-        'values' => array_map(fn (array $row): float => (float) $row['revenue'], $rows),
+        'labels' => array_map(function (array $row): string {
+            return date('M j', strtotime($row['sale_date']));
+        }, $rows),
+        'values' => array_map(function (array $row): float {
+            return (float) $row['revenue'];
+        }, $rows),
     ];
 }
 
@@ -366,7 +370,9 @@ function cart_items(): array
 
 function cart_total(): float
 {
-    return array_reduce(cart_items(), fn (float $sum, array $item): float => $sum + (float) $item['line_total'], 0.0);
+    return array_reduce(cart_items(), function (float $sum, array $item): float {
+        return $sum + (float) $item['line_total'];
+    }, 0.0);
 }
 
 function money(float $amount): string
@@ -379,7 +385,9 @@ function create_order(int $userId, array $items, string $shippingName, string $s
     $pdo = db();
     $pdo->beginTransaction();
     try {
-        $total = array_reduce($items, fn (float $sum, array $item): float => $sum + (float) $item['line_total'], 0.0);
+        $total = array_reduce($items, function (float $sum, array $item): float {
+            return $sum + (float) $item['line_total'];
+        }, 0.0);
         $stmt = $pdo->prepare(
             'INSERT INTO orders (user_id, total_amount, shipping_name, shipping_address, notes, status)
              VALUES (?, ?, ?, ?, ?, "pending")'
