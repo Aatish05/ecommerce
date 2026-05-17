@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/functions.php';
 $pageTitle = $pageTitle ?? APP_NAME;
-$metaDescription = $metaDescription ?? 'EcoTech Electronics sells sustainable laptops, phones, audio gear, and smart devices with secure online ordering.';
+$metaDescription = $metaDescription ?? 'DGShop Electronics sells sustainable laptops, phones, audio gear, and smart devices with secure online ordering.';
 $active = $active ?? '';
 ?>
 <!doctype html>
@@ -11,7 +11,7 @@ $active = $active ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="<?= e($metaDescription) ?>">
     <meta name="keywords" content="electronics ecommerce, sustainable technology, laptops, smartphones, smart home, PHP MySQL shop">
-    <meta name="author" content="EcoTech Electronics Student Project">
+    <meta name="author" content="DGShop Electronics Student Project">
     <meta name="robots" content="index, follow">
     <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -25,7 +25,7 @@ $active = $active ?? '';
     <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary border-bottom shadow-sm" aria-label="Main navigation">
         <div class="container">
             <a class="navbar-brand fw-bold text-success" href="<?= url('index.php') ?>">
-                <i class="bi bi-cpu" aria-hidden="true"></i> EcoTech
+                <i class="bi bi-cpu" aria-hidden="true"></i> DGShop
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-define('APP_NAME', 'EcoTech Electronics');
+define('APP_NAME', 'DGShop Electronics');
 define('APP_BASE_URL', getenv('APP_BASE_URL') ?: '');
 define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
 define('DB_NAME', getenv('DB_NAME') ?: 'ecotech_ecommerce');

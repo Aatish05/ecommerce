@@ -12,7 +12,7 @@ include __DIR__ . '/includes/header.php';
             <div class="col-lg-7">
                 <span class="hero-badge"><i class="bi bi-leaf" aria-hidden="true"></i> Sustainable electronics marketplace</span>
                 <h1 class="display-4 fw-bold mt-3">Upgrade your tech with a cleaner footprint.</h1>
-                <p class="lead">DGShop Electronics is a dynamic e-commerce website for curated laptops, phones, audio gear, and smart devices. It includes secure accounts, shopping cart, checkout, admin CRUD, search, and database-driven product pages.</p>
+                <p class="lead">DGShop Electronics is your trusted online destination for the latest laptops, smartphones, audio accessories, and smart technology. Designed with a modern and user-friendly experience, DGShop makes it easy to explore high-quality electronics, discover trending gadgets, and shop with confidence anytime, anywhere.</p>
                 <div class="d-flex flex-wrap gap-2">
                     <a class="btn btn-success btn-lg" href="<?= url('products.php') ?>">Shop products</a>
                     <a class="btn btn-outline-success btn-lg" href="<?= url('register.php') ?>">Create account</a>
