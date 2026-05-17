@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-4">
-                    <h2 class="h5">EcoTech Electronics</h2>
+                    <h2 class="h5">DGShop Electronics</h2>
                     <p class="small mb-0">A student-built PHP/MySQL e-commerce system for sustainable electronic products.</p>
                 </div>
                 <div class="col-md-4">
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <hr class="border-secondary">
-            <p class="small mb-0">&copy; <?= date('Y') ?> EcoTech Electronics. Educational group project.</p>
+            <p class="small mb-0">&copy; <?= date('Y') ?> DGShop Electronics. Educational group project.</p>
         </div>
     </footer>
 

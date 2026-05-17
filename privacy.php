@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Privacy Policy';
-$metaDescription = 'EcoTech Electronics privacy policy explaining GDPR, user consent, data protection, and ethical data handling.';
+$metaDescription = 'DGShop Electronics privacy policy explaining GDPR, user consent, data protection, and ethical data handling.';
 $active = 'privacy';
 include __DIR__ . '/includes/header.php';
 ?>
@@ -9,7 +9,7 @@ include __DIR__ . '/includes/header.php';
     <div class="row justify-content-center">
         <div class="col-lg-9">
             <h1>Privacy policy</h1>
-            <p class="lead">This page explains how EcoTech Electronics collects, protects, and uses personal data for this educational e-commerce project.</p>
+            <p class="lead">This page explains how DGShop Electronics collects, protects, and uses personal data for this educational e-commerce project.</p>
             <h2>Data we collect</h2>
             <p>We collect account details such as name, username, email address, hashed password, order information, shipping address, cart session data, product reviews, vendor product records, and contact form messages.</p>
             <h2>GDPR and consent</h2>

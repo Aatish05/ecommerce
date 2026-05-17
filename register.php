@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Register';
-$metaDescription = 'Create a secure EcoTech Electronics account.';
+$metaDescription = 'Create a secure DGShop Electronics account.';
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="container">

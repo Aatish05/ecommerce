@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Terms and Conditions';
-$metaDescription = 'EcoTech Electronics terms and conditions for product browsing, accounts, orders, and ethical website use.';
+$metaDescription = 'DGShop Electronics terms and conditions for product browsing, accounts, orders, and ethical website use.';
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="container">
     <div class="row justify-content-center">
         <div class="col-lg-9">
             <h1>Terms and conditions</h1>
-            <p class="lead">These terms are written for the EcoTech Electronics student project demonstration.</p>
+            <p class="lead">These terms are written for the DGShop Electronics student project demonstration.</p>
             <h2>Accounts</h2>
             <p>Users must provide accurate registration details and keep passwords private. Administrators must not share privileged accounts.</p>
             <h2>Orders</h2>

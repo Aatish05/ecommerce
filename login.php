@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Login';
-$metaDescription = 'Log in to EcoTech Electronics using secure PHP sessions.';
+$metaDescription = 'Log in to DGShop Electronics using secure PHP sessions.';
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="container">

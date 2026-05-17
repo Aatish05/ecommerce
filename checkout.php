@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Checkout';
-$metaDescription = 'Secure checkout for EcoTech Electronics orders.';
+$metaDescription = 'Secure checkout for DGShop Electronics orders.';
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="container">

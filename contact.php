@@ -17,26 +17,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         [$saved, $errors] = save_contact_message($values['name'], $values['email'], $values['subject'], $values['message']);
         if ($saved) {
-            set_flash('success', 'Thank you. Your message has been sent to the EcoTech team.');
+            set_flash('success', 'Thank you. Your message has been sent to the DGShop team.');
             redirect('contact.php');
         }
     }
 }
 
 $pageTitle = 'Contact Us';
-$metaDescription = 'Contact EcoTech Electronics using a validated PHP contact form stored in MySQL.';
+$metaDescription = 'Contact DGShop Electronics using a validated PHP contact form stored in MySQL.';
 $active = 'contact';
 include __DIR__ . '/includes/header.php';
 ?>
 <section class="container">
     <div class="row g-5">
         <div class="col-lg-5">
-            <h1>Contact EcoTech</h1>
+            <h1>Contact DGShop</h1>
             <p class="lead">Use the contact form for support, product questions, accessibility feedback, or privacy requests.</p>
             <div class="card border-success">
                 <div class="card-body">
                     <h2 class="h5">Support details</h2>
-                    <p class="mb-1"><i class="bi bi-envelope" aria-hidden="true"></i> support@ecotech.test</p>
+                    <p class="mb-1"><i class="bi bi-envelope" aria-hidden="true"></i> support@DGShop.test</p>
                     <p class="mb-1"><i class="bi bi-clock" aria-hidden="true"></i> Monday-Friday, 9:00-17:00</p>
                     <p class="mb-0"><i class="bi bi-geo-alt" aria-hidden="true"></i> Student Innovation Hub</p>
                 </div>
