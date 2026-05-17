@@ -129,10 +129,10 @@
   <g transform="translate(60 780)">
     <rect width="1680" height="300" rx="12" fill="#fff" stroke="#222" stroke-width="2"/>
     <text x="25" y="40" class="txt title">Flow Explanation</text>
-    <text x="25" y="78" class="txt" font-size="17">Customer flow: Homepage ’ Products ’ Product Detail ’ Cart ’ Checkout ’ User Orders.</text>
+    <text x="25" y="78" class="txt" font-size="17">Customer flow: Homepage -&gt; Products -&gt; Product Detail -&gt; Cart -&gt; Checkout -&gt; User Orders.</text>
     <text x="25" y="118" class="txt" font-size="17">Authentication flow: Login/Register controls access to checkout, order history, admin, and vendor pages.</text>
-    <text x="25" y="158" class="txt" font-size="17">Admin flow: Admin Dashboard ’ Product Management ’ Orders, Reviews, Messages, Users, Revenue Graph.</text>
-    <text x="25" y="198" class="txt" font-size="17">Vendor flow: Vendor Panel ’ Add/Edit Products ’ View Own Orders ’ View Own Revenue.</text>
+    <text x="25" y="158" class="txt" font-size="17">Admin flow: Admin Dashboard -&gt; Product Management -&gt; Orders, Reviews, Messages, Users, Revenue Graph.</text>
+    <text x="25" y="198" class="txt" font-size="17">Vendor flow: Vendor Panel -&gt; Add/Edit Products -&gt; View Own Orders -&gt; View Own Revenue.</text>
     <text x="25" y="238" class="txt" font-size="17">This is low fidelity because it uses plain boxes and labels to plan layout before final styling.</text>
   </g>
 </svg>
