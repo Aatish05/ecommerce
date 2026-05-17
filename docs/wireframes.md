@@ -2,6 +2,15 @@
 
 These wireframes show the basic layout plan for the electronics e-commerce website. The low-fidelity version focuses on structure. The high-fidelity version explains the final visual design.
 
+## Editable image files
+
+Two editable SVG image files are included:
+
+- `docs/wireframe-images/low-fidelity-wireframe.svg`
+- `docs/wireframe-images/high-fidelity-wireframe.svg`
+
+These can be opened in a browser, inserted into the report as images, or imported into Figma as editable vector files.
+
 ## Low-fidelity wireframes
 
 ### 1. Homepage
