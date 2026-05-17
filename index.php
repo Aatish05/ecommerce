@@ -21,12 +21,12 @@ include __DIR__ . '/includes/header.php';
             <div class="col-lg-5">
                 <div class="card border-0 shadow-lg">
                     <div class="card-body p-4">
-                        <h2 class="h4">HD rubric features</h2>
+                        <h2 class="h4">DGShop Electronics – Smart Tech Marketplace</h2>
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> PHP sessions, login, logout, roles</li>
-                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> MySQL products, orders, users, messages</li>
-                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> Admin CRUD and protected dashboard</li>
-                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> SEO, accessibility, validation, GDPR pages</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> Wide range of latest electronic products in one place</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> Easy online shopping with fast and convenient access</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i> Competitive prices and regular special offers</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>Trusted platform for quality gadgets and technology products</li>
                         </ul>
                     </div>
                 </div>
