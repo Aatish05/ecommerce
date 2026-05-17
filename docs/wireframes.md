@@ -4,12 +4,27 @@ These wireframes show the basic layout plan for the electronics e-commerce websi
 
 ## Editable image files
 
-Two editable SVG image files are included:
+Four editable SVG image files are included:
 
-- `docs/wireframe-images/low-fidelity-wireframe.svg`
-- `docs/wireframe-images/high-fidelity-wireframe.svg`
+- `docs/wireframe-images/low-fidelity-flow-10-pages.svg` - main low-fidelity flow with 10 pages
+- `docs/wireframe-images/high-fidelity-flow-10-pages.svg` - main high-fidelity flow with 10 pages
+- `docs/wireframe-images/low-fidelity-wireframe.svg` - simple overview version
+- `docs/wireframe-images/high-fidelity-wireframe.svg` - simple overview version
 
 These can be opened in a browser, inserted into the report as images, or imported into Figma as editable vector files.
+
+The main 10-page flow covers:
+
+1. Homepage
+2. Products page
+3. Product detail page
+4. Cart
+5. Checkout
+6. Login/Register
+7. User order history
+8. Admin dashboard
+9. Admin product management
+10. Vendor dashboard/panel
 
 ## Low-fidelity wireframes
 
